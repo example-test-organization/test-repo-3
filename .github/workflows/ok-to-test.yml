@@ -96,7 +96,15 @@ jobs:
               curl -X POST -H "Authorization: Bearer $GITHUB_TOKEN" \
                 -H "Accept: application/vnd.github.v3+json" \
                 "https://api.github.com/repos/${{ github.repository }}/actions/runs/$run_id/rerun"
-              msg="Approved workflow run: $run_id" 
-              echo "output_msg=${msg}" >> $GITHUB_ENV
             done
+            msg="Approvals successfully granted for pending runs."
+            echo "output_msg=${msg}" >> $GITHUB_ENV
           fi
+
+      - name: Post Comment for Invalid Condition
+        if: (steps.rerun.outcome == 'success') && env.output_msg
+        uses: peter-evans/create-or-update-comment@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          issue-number: ${{ github.event.issue.number }}
+          body: ${{ env.output_msg }}
