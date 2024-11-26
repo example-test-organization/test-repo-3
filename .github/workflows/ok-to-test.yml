@@ -11,9 +11,49 @@ jobs:
     if: |
       startsWith(github.event.comment.body, '/ok-to-test') && (github.event.comment.author_association == 'MEMBER' || github.event.comment.author_association == 'OWNER')
     steps:
-      - name: Dispatch Workflow
-        uses: peter-evans/slash-command-dispatch@v2
+      - name: Check Slash Command and User Association
+        id: check-condition
+        run: |
+          if [[ "${{ github.event.comment.body }}" == /ok-to-test* ]]; then
+            if [[ "${{ github.event.comment.author_association }}" == "MEMBER" || "${{ github.event.comment.author_association }}" == "OWNER" ]]; then
+              echo "condition_met=true" >> $GITHUB_ENV
+            else
+              echo "User does not have permission to trigger this command."
+              echo "condition_met=false" >> $GITHUB_ENV
+            fi
+          else
+            echo "Not a valid slash command."
+            echo "condition_met=false" >> $GITHUB_ENV
+
+      # Comment if the condition is not met
+      - name: Post Comment for Invalid Condition
+        if: env.condition_met == 'false'
+        uses: peter-evans/create-or-update-comment@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          command: ok-to-test
-          args: ${{ github.event.issue.number }}
+          body: 🚫 This command cannot be processed. Only organization members or owners can use the `/ok-to-test` command.
+
+      # Approve Run if the condition is met
+      - name: Approve Run
+        if: env.condition_met == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Extract the PR head SHA
+          pr_sha=${{ github.event.issue.pull_request.head.sha }}
+          
+          # Get the run_id of the current workflow run
+          curl -s -H "Authorization: Bearer $GITHUB_TOKEN" \
+            -H "Accept: application/vnd.github.v3+json" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/runs?head_sha=$pr_sha" | \
+            jq -r '.workflow_runs[] | select(.conclusion == "action_required") | .id'
+
+          # Approve the workflow run
+          if [[ -n "$run_id" ]]; then
+            curl -X POST -H "Authorization: Bearer $GITHUB_TOKEN" \
+              -H "Accept: application/vnd.github.v3+json" \
+              "https://api.github.com/repos/${{ github.repository }}/actions/runs/$run_id/approve"
+            echo "Workflow run approved: $run_id"
+          else
+            echo "No workflow run found to approve."
+          fi
