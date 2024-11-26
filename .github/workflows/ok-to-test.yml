@@ -22,6 +22,7 @@ jobs:
           else
             echo "Not a valid slash command."
             echo "condition_met=false" >> $GITHUB_ENV
+          fi
 
       # Comment if the condition is not met
       - name: Post Comment for Invalid Condition
