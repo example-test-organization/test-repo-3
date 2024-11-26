@@ -8,20 +8,16 @@ on:
 jobs:
   process-command:
     runs-on: ubuntu-latest
-    if: startsWith(github.event.comment.body, '/ok-to-test') || startsWith(github.event.comment.body, '/rerun')
+    if: (github.event.comment.body == '/ok-to-test') || (github.event.comment.body == '/rerun')
     steps:
       - name: Check Slash Command and User Association
         id: check-condition
         run: |
-          if [[ "${{ github.event.comment.body }}" == /ok-to-test* ]]; then
-            if [[ "${{ github.event.comment.author_association }}" == "MEMBER" || "${{ github.event.comment.author_association }}" == "OWNER" ]]; then
-              echo "condition_met=true" >> $GITHUB_ENV
-            else
-              echo "User does not have permission to trigger this command."
-              echo "condition_met=false" >> $GITHUB_ENV
-            fi
+          echo "slash_command=${{github.event.comment.body}}" >> $GITHUB_ENV
+          if [[ "${{ github.event.comment.author_association }}" == "MEMBER" || "${{ github.event.comment.author_association }}" == "OWNER" ]]; then
+            echo "condition_met=true" >> $GITHUB_ENV
           else
-            echo "Not a valid slash command."
+            echo "User does not have permission to trigger this command."
             echo "condition_met=false" >> $GITHUB_ENV
           fi
 
@@ -36,7 +32,7 @@ jobs:
 
       # Approve Run if the condition is met
       - name: Approve Run
-        if: env.condition_met == 'true'
+        if: env.condition_met == 'true' && (github.event.comment.body == '/ok-to-test')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -62,3 +58,11 @@ jobs:
               echo "Approved workflow run: $run_id"
             done
           fi
+
+
+      - name: Re-Run
+        if: env.condition_met == 'true' && (github.event.comment.body == '/rerun')
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo rerun
