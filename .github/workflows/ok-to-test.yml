@@ -11,6 +11,7 @@ jobs:
     steps:
       - name: Check Slash Command and User Association
         id: check-condition
+        if: startsWith(github.event.comment.body, '/ok-to-test')
         run: |
           if [[ "${{ github.event.comment.body }}" == /ok-to-test* ]]; then
             if [[ "${{ github.event.comment.author_association }}" == "MEMBER" || "${{ github.event.comment.author_association }}" == "OWNER" ]]; then
@@ -31,7 +32,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           issue-number: ${{ github.event.issue.number }}
-          body: 🚫 This command cannot be processed. Only organization members or owners can use the `/ok-to-test` command.
+          body: 🚫 This command cannot be processed. Only organization members or owners can use the commands.
 
       # Approve Run if the condition is met
       - name: Approve Run
