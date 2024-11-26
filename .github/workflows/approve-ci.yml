@@ -1,0 +1,15 @@
+name: Approve Workflow Run
+
+on:
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: "PR Number"
+        required: true
+
+jobs:
+  approve:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Approve Workflow Run
+        run: echo "Workflow approved for PR #${{ github.event.inputs.pr_number }}"

@@ -1,0 +1,20 @@
+name: Slash Command Listener
+
+on:
+  issue_comment:
+    types:
+      - created
+
+jobs:
+  process-command:
+    runs-on: ubuntu-latest
+    if: |
+      github.event.comment.body.startsWith('/ok-to-test') &&
+      contains(github.event.comment.author_association, 'MEMBER')
+    steps:
+      - name: Dispatch Workflow
+        uses: peter-evans/slash-command-dispatch@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          command: approve
+          args: ${{ github.event.issue.number }}
