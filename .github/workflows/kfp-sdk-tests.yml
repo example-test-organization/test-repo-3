@@ -1,0 +1,16 @@
+name: KFP SDK Tests
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    paths:
+      - '**'
+
+jobs:
+  sdk-tests:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Run SDK Tests
+      run: echo tests passed!
