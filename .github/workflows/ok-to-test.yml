@@ -48,7 +48,7 @@ jobs:
 
           # Approve the workflow run
           if [[ -z "$runs" ]]; then
-            msg="No workflow runs requiring approval for PR with SHA: $pr_sha"
+            msg="No workflow runs requiring approval for PR with SHA: ${{ github.event.issue.pull_request.head.sha }}"
             echo "output_msg=${msg}" >> $GITHUB_ENV
           else
             echo "Found workflow runs requiring approval: $runs"
