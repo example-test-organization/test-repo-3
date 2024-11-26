@@ -8,7 +8,9 @@ on:
 jobs:
   process-command:
     runs-on: ubuntu-latest
-    if: (github.event.comment.body == '/ok-to-test') || (github.event.comment.body == '/rerun')
+    if: |
+      (github.event.comment.user.login != 'github-actions') && 
+      ((github.event.comment.body == '/ok-to-test') || (github.event.comment.body == '/rerun'))
     steps:
       - name: Check Slash Command and User Association
         id: check-condition
