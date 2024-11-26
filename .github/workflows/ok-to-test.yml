@@ -8,8 +8,6 @@ on:
 jobs:
   process-command:
     runs-on: ubuntu-latest
-    if: |
-      startsWith(github.event.comment.body, '/ok-to-test') && (github.event.comment.author_association == 'MEMBER' || github.event.comment.author_association == 'OWNER')
     steps:
       - name: Check Slash Command and User Association
         id: check-condition
