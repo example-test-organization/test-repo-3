@@ -68,7 +68,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           issue-number: ${{ github.event.issue.number }}
-          body: env.output_msg
+          body: ${{ env.output_msg }}
 
       - name: Re-Run
         id: rerun
