@@ -43,17 +43,21 @@ jobs:
           pr_sha=${{ github.event.issue.pull_request.head.sha }}
           
           # Get the run_id of the current workflow run
-          curl -s -H "Authorization: Bearer $GITHUB_TOKEN" \
+          runs=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" \
             -H "Accept: application/vnd.github.v3+json" \
             "https://api.github.com/repos/${{ github.repository }}/actions/runs?head_sha=$pr_sha" | \
-            jq -r '.workflow_runs[] | select(.conclusion == "action_required") | .id'
+            jq -r '.workflow_runs[] | select(.conclusion == "action_required") | .id')
 
           # Approve the workflow run
-          if [[ -n "$run_id" ]]; then
-            curl -X POST -H "Authorization: Bearer $GITHUB_TOKEN" \
-              -H "Accept: application/vnd.github.v3+json" \
-              "https://api.github.com/repos/${{ github.repository }}/actions/runs/$run_id/approve"
-            echo "Workflow run approved: $run_id"
+          if [[ -z "$runs" ]]; then
+            echo "No workflow runs requiring approval for PR with SHA: $pr_sha"
           else
-            echo "No workflow run found to approve."
+            echo "Found workflow runs requiring approval: $runs"
+            # Approve each workflow run
+            for run_id in $runs; do
+              curl -X POST -H "Authorization: Bearer $GITHUB_TOKEN" \
+                -H "Accept: application/vnd.github.v3+json" \
+                "https://api.github.com/repos/${{ github.repository }}/actions/runs/$run_id/approve"
+              echo "Approved workflow run: $run_id"
+            done
           fi
