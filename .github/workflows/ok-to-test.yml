@@ -53,15 +53,13 @@ jobs:
           PR_SHA=$(echo "$PR_DATA" | jq -r '.head.sha')
           echo "PR_SHA=$PR_SHA" >> $GITHUB_ENV
 
-
-
       - name: Get runs
         id: get-runs
         run: |
           runs=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" \
-          -H "Accept: application/vnd.github.v3+json" \
-          "https://api.github.com/repos/${{ github.repository }}/actions/runs?head_sha=$PR_SHA" | \
-          jq -r '.workflow_runs[] | .id')
+            -H "Accept: application/vnd.github.v3+json" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/runs?head_sha=${{ env.PR_SHA }}" | \
+            jq -r '.workflow_runs[] | .id')
           
           echo "runs=${runs}" >> $GITHUB_ENV
 
