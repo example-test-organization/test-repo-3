@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     if: (github.event.comment.body == '/ok-to-test') || (github.event.comment.body == '/rerun')
     outputs:
-      runs: ${{ steps.get-runs.outputs.runs }}
+      PR_SHA: ${{ steps.fetch-pr-sha.outputs.PR_SHA }}
     steps:
       # Check if the author is a member or Owner
       - name: Check Slash Command and User Association
