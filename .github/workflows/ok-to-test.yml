@@ -6,7 +6,7 @@ on:
       - created
 
 env:
-  MAX_WF_RUNS: 30
+  MAX_WF_RUNS: 1
 jobs:
   process-command:
     runs-on: ubuntu-latest
