@@ -88,7 +88,6 @@ jobs:
       - name: Leave a Comment
         env:
           message: ${{ env.output_msg }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
           gh issue comment ${{ github.event.issue.number }} --repo "${{ github.repository }}" --body "${{ env.message }}"
