@@ -4,7 +4,6 @@ on:
   issue_comment:
     types:
       - created
-
 env:
   DEFAULT_BRANCH: main
   MAX_WF_RUNS: 25
@@ -105,55 +104,6 @@ jobs:
             echo "Approved workflow run: $run_id"
           done
           msg="Approvals successfully granted for pending runs."
-          echo "output_msg=${msg}" >> $GITHUB_ENV
-
-      - name: Leave a Comment
-        env:
-          message: ${{ env.output_msg }}
-        run: |
-          echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
-          gh issue comment ${{ github.event.issue.number }} --repo "${{ github.repository }}" --body "${{ env.message }}"
-
-  rerun:
-    runs-on: ubuntu-latest
-    needs: process-command
-    if: github.event.comment.body == '/rerun'
-    steps:
-      - name: Checkout Main Branch
-        uses: actions/checkout@v3
-        with:
-          ref: ${{ env.DEFAULT_BRANCH }}
-
-      - name: Re-trigger runs
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR_SHA: ${{ needs.process-command.outputs.PR_SHA }}
-        run: |
-          runs=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" \
-            -H "Accept: application/vnd.github.v3+json" \
-            "https://api.github.com/repos/${{ github.repository }}/actions/runs?head_sha=${{ env.PR_SHA }}" | \
-            jq -r '.workflow_runs[] | .id')
-          
-          count=$(echo "$runs" | wc -w)
-          if (( count > ${{ env.MAX_WF_RUNS }} )); then
-            echo ${{ env.MAX_WF_RUNS_MSG }}
-            exit 1
-          fi
-          
-          if [[ -z "$runs" ]]; then
-            echo "No workflow runs found for the given head SHA."
-            exit 1
-          fi
-
-          echo "Found workflow runs to trigger: $runs"
-          # Rerun each workflow run
-          #for run_id in $runs; do
-          #  curl -X POST -H "Authorization: Bearer $GITHUB_TOKEN" \
-          #    -H "Accept: application/vnd.github.v3+json" \
-          #    "https://api.github.com/repos/${{ github.repository }}/actions/runs/$run_id/rerun"
-          #  echo "Triggered workflow run: $run_id"
-          #done
-          msg="Runs were successfully triggered."
           echo "output_msg=${msg}" >> $GITHUB_ENV
 
       - name: Leave a Comment
