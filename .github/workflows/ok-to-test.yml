@@ -51,7 +51,7 @@ jobs:
           PR_URL="${PR_URL}"
           PR_DATA=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" -H "Accept: application/vnd.github.v3+json" "$PR_URL")
           PR_SHA=$(echo "$PR_DATA" | jq -r '.head.sha')
-          echo "PR_SHA=$PR_SHA" >> $GITHUB_ENV
+          echo "PR_SHA=$PR_SHA" >> $GITHUB_OUTPUT
 
 
   approve:
