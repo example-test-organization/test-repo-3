@@ -114,6 +114,7 @@ jobs:
             echo "An unexpected amount of runs [${count}] were identified for reruns."
             echo "It is likely something went wrong with the run fetch logic. If this is the expected amount then update MAX_WF_RUNS in this workflow." 
             echo "In order to avoid triggering unexpected runs, exiting early."
+            exit 1
           fi
           
           if [[ -z "$runs" ]]; then
