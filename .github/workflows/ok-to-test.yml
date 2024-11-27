@@ -6,6 +6,7 @@ on:
       - created
 
 env:
+  DEFAULT_BRANCH: main
   MAX_WF_RUNS: 1
   MAX_WF_RUNS_MSG: |
     An unexpected amount of runs [${count}] were identified for this action. \
@@ -19,6 +20,10 @@ jobs:
     outputs:
       PR_SHA: ${{ steps.fetch-pr-sha.outputs.PR_SHA }}
     steps:
+      - name: Checkout Main Branch
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ env.DEFAULT_BRANCH }}
       # Check if the author is a member or Owner
       - name: Check Slash Command and User Association
         id: check-condition
@@ -66,6 +71,10 @@ jobs:
     needs: process-command
     if: github.event.comment.body == '/ok-to-test'
     steps:
+      - name: Checkout Main Branch
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ env.DEFAULT_BRANCH }}
       - name: Approve Runs
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -110,6 +119,11 @@ jobs:
     needs: process-command
     if: github.event.comment.body == '/rerun'
     steps:
+      - name: Checkout Main Branch
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ env.DEFAULT_BRANCH }}
+
       - name: Re-trigger runs
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
