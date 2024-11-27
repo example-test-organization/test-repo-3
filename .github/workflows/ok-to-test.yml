@@ -43,7 +43,6 @@ jobs:
       # Approve Run if the condition is met
       - name: Approve Run
         id: approve
-        if: env.condition_met == 'true' && (github.event.comment.body == '/ok-to-test')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -75,6 +74,17 @@ jobs:
 
 
 
+
+
+      - name: Leave a Comment
+        env:
+          message: ${{ env.output_msg }}
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
+          if [[ "${{ env.condition_met }}" == "false" ]]; then
+            gh issue comment ${{ github.event.issue.number }} --repo "${{ github.repository }}" --body "${{ env.message }}"
+            exit 1
+          fi
 
       # Comment on output message
 #      - name: Post Comment for Invalid Condition
@@ -120,10 +130,13 @@ jobs:
           fi
 
 
-#      - name: Post Comment for Invalid Condition
-#        if: (steps.rerun.outcome == 'success') && env.output_msg
-#        uses: peter-evans/create-or-update-comment@v3
-#        with:
-#          token: ${{ secrets.GITHUB_TOKEN }}
-#          issue-number: ${{ github.event.issue.number }}
-#          body: ${{ env.output_msg }}
+
+      - name: Leave a Comment
+        env:
+          message: ${{ env.output_msg }}
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
+          if [[ "${{ env.condition_met }}" == "false" ]]; then
+            gh issue comment ${{ github.event.issue.number }} --repo "${{ github.repository }}" --body "${{ env.message }}"
+            exit 1
+          fi
