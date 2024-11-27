@@ -5,6 +5,8 @@ on:
     types:
       - created
 
+env:
+  MAX_WF_RUNS: 30
 jobs:
   process-command:
     runs-on: ubuntu-latest
@@ -106,6 +108,13 @@ jobs:
             -H "Accept: application/vnd.github.v3+json" \
             "https://api.github.com/repos/${{ github.repository }}/actions/runs?head_sha=${{ env.PR_SHA }}" | \
             jq -r '.workflow_runs[] | .id')
+          
+          count=$(echo "$runs" | wc -w)
+          if (( count > ${{ env.MAX_WF_RUNS }} )); then
+            echo "An unexpected amount of runs [${count}] were identified for reruns."
+            echo "It is likely something went wrong with the run fetch logic. If this is the expected amount then update MAX_WF_RUNS in this workflow." 
+            echo "In order to avoid triggering unexpected runs, exiting early."
+          fi
           
           if [[ -z "$runs" ]]; then
             echo "No workflow runs found for the given head SHA."
