@@ -7,7 +7,7 @@ on:
 
 env:
   DEFAULT_BRANCH: main
-  MAX_WF_RUNS: 1
+  MAX_WF_RUNS: 25
   MAX_WF_RUNS_MSG: |
     An unexpected amount of runs [${count}] were identified for this action. \
     It is likely something went wrong with the run fetch logic. \
