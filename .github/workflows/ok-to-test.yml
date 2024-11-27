@@ -99,7 +99,6 @@ jobs:
     steps:
       - name: Re-Run
         id: rerun
-        if: env.condition_met == 'true' && (github.event.comment.body == '/rerun')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -133,8 +132,4 @@ jobs:
         env:
           message: ${{ env.output_msg }}
         run: |
-          echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
-          if [[ "${{ env.condition_met }}" == "false" ]]; then
-            gh issue comment ${{ github.event.issue.number }} --repo "${{ github.repository }}" --body "${{ env.message }}"
-            exit 1
-          fi
+          gh issue comment ${{ github.event.issue.number }} --repo "${{ github.repository }}" --body "${{ env.message }}"
