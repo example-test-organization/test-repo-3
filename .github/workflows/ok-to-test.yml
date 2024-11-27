@@ -76,13 +76,13 @@ jobs:
 
 
 
-      - name: Leave a Comment
-        env:
-          message: ${{ env.output_msg }}
-        run: |
-          echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
-          gh issue comment ${{ github.event.issue.number }} --repo "${{ github.repository }}" --body "${{ env.message }}"
-
+#      - name: Leave a Comment
+#        env:
+#          message: ${{ env.output_msg }}
+#        run: |
+#          echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
+#          gh issue comment ${{ github.event.issue.number }} --repo "${{ github.repository }}" --body "${{ env.message }}"
+#
 
       # Comment on output message
 #      - name: Post Comment for Invalid Condition
@@ -126,10 +126,8 @@ jobs:
             echo "output_msg=${msg}" >> $GITHUB_ENV
           fi
 
-
-
-      - name: Leave a Comment
-        env:
-          message: ${{ env.output_msg }}
-        run: |
-          gh issue comment ${{ github.event.issue.number }} --repo "${{ github.repository }}" --body "${{ env.message }}"
+#      - name: Leave a Comment
+#        env:
+#          message: ${{ env.output_msg }}
+#        run: |
+#          gh issue comment ${{ github.event.issue.number }} --repo "${{ github.repository }}" --body "${{ env.message }}"
