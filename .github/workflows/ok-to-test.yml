@@ -31,6 +31,7 @@ jobs:
         run: |
           echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
           gh issue comment ${{ github.event.issue.number }} --repo "${{ github.repository }}" --body "${{ env.message }}"
+          echo ${message}
           exit 1
 
       - name: Check if comment is on a pull request
@@ -41,6 +42,7 @@ jobs:
             exit 1
           fi
           echo "PR_URL=${{ github.event.issue.pull_request.url }}" >> $GITHUB_ENV
+
       - name: Fetch pull request sha
         id: fetch-pr-sha
         env:
