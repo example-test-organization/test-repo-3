@@ -63,7 +63,7 @@ jobs:
         id: get-runs
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR_SHA: ${{ needs.process-command.outputs.runs }}
+          PR_SHA: ${{ needs.process-command.outputs.PR_SHA }}
         run: |
           runs=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" \
             -H "Accept: application/vnd.github.v3+json" \
