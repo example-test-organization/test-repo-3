@@ -30,9 +30,8 @@ jobs:
           message: 🚫 This command cannot be processed. Only organization members or owners can use the commands.
         run: |
           echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
-          gh issue comment ${{ github.event.issue.number }} --repo "${{ github.repository }}" --body "${{ env.message }}"
           if [[ "${{ env.condition_met }}" == "false" ]]; then
-            echo "condition_met=true" >> $GITHUB_ENV
+            gh issue comment ${{ github.event.issue.number }} --repo "${{ github.repository }}" --body "${{ env.message }}"
             exit 1
           fi
 
